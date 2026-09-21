@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buccaneer Dash</title>
+    <meta name="description" content="Sail an endless, procedurally generated low-poly pirate sea, hunt treasure and race rival crews." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <!-- Loading: a ship's wheel spins while the models come in -->
+    <section id="loading" class="screen show">
+      <svg class="wheel" viewBox="-60 -60 120 120" aria-hidden="true">
+        <g fill="none" stroke="#7a4a22" stroke-linecap="round">
+          <circle r="34" stroke-width="9" />
+          <circle r="34" stroke="#a8692f" stroke-width="4" />
+          <circle r="9" fill="#a8692f" stroke-width="5" />
+          <g stroke-width="6">
+            <path d="M0-12V-54M0 12V54M-12 0H-54M12 0H54M-8.5-8.5L-38-38M8.5 8.5L38 38M-8.5 8.5L-38 38M8.5-8.5L38-38" />
+          </g>
+          <g fill="#7a4a22" stroke="none">
+            <circle cy="-54" r="6" /><circle cy="54" r="6" /><circle cx="-54" r="6" /><circle cx="54" r="6" />
+            <circle cx="-38" cy="-38" r="6" /><circle cx="38" cy="38" r="6" /><circle cx="-38" cy="38" r="6" /><circle cx="38" cy="-38" r="6" />
+          </g>
+        </g>
+      </svg>
+      <h1 class="title">Buccaneer Dash</h1>
+      <div class="bar"><span id="load-fill"></span></div>
+      <p id="load-text">Hoisting the sails… 0%</p>
+    </section>
+
+    <!-- Main menu -->
+    <section id="menu" class="screen">
+      <div class="panel menu-panel">
+        <h1 class="title big">Buccaneer<br />Dash</h1>
+        <p class="sub">An endless sea of islands. Treasure in the water. Rival crews waiting at every regatta.</p>
+        <nav>
+          <button data-action="play" class="btn primary">Set Sail</button>
+          <button data-action="scores" class="btn">Highscores</button>
+          <button data-action="howto" class="btn">How to Play</button>
+          <button data-action="newworld" class="btn small">Chart a new world</button>
+        </nav>
+        <p class="hint">Press <kbd>Enter</kbd> to set sail · <kbd>M</kbd> mutes</p>
+      </div>
+    </section>
+
+    <section id="scores" class="screen">
+      <div class="panel scroll">
+        <h2 class="title">Captain's Log</h2>
+        <p class="sub" id="gold-line"></p>
+        <div id="score-boards"></div>
+        <p id="score-empty" class="sub">No regattas won or lost yet. Follow the beams of light out at sea.</p>
+        <button data-action="back" class="btn">Back</button>
+      </div>
+    </section>
+
+    <section id="howto" class="screen">
+      <div class="panel scroll">
+        <h2 class="title">Ship's Orders</h2>
+        <ul class="orders">
+          <li><kbd>W</kbd> / <kbd>↑</kbd> Full sail ahead</li>
+          <li><kbd>S</kbd> / <kbd>↓</kbd> Drop anchor, reverse</li>
+          <li><kbd>A</kbd> <kbd>D</kbd> / <kbd>←</kbd> <kbd>→</kbd> Steer</li>
+          <li><kbd>Space</kbd> / <kbd>Shift</kbd> Wind gust boost</li>
+          <li><kbd>E</kbd> Start a regatta at its start line</li>
+          <li><kbd>Esc</kbd> Pause · <kbd>M</kbd> Mute</li>
+        </ul>
+        <p class="sub">The sea goes on forever, with small islands, great forts and floating treasure chests to fish out. Gold beams of light mark the regattas: sail to one, then press <kbd>E</kbd> at its towers to race three rival crews over three laps. Sail through every pair of barrel buoys in order; the gold ring marks the next one.</p>
+        <button data-action="back" class="btn">Back</button>
+      </div>
+    </section>
+
+    <section id="pause" class="screen">
+      <div class="panel">
+        <h2 class="title">Anchored</h2>
+        <nav>
+          <button data-action="resume" class="btn primary">Resume</button>
+          <button data-action="restart" class="btn" data-race-only>Restart race</button>
+          <button data-action="leave" class="btn" data-race-only>Leave the race</button>
+          <button data-action="quit" class="btn">Return to port</button>
+        </nav>
+      </div>
+    </section>
+
+    <section id="finish" class="screen">
+      <div class="panel">
+        <h2 class="title" id="finish-title">Victory!</h2>
+        <p class="sub" id="finish-sub"></p>
+        <dl class="stats">
+          <div><dt>Place</dt><dd id="finish-place">1st</dd></div>
+          <div><dt>Time</dt><dd id="finish-time">0:00.00</dd></div>
+          <div><dt>Best lap</dt><dd id="finish-lap">0:00.00</dd></div>
+        </dl>
+        <form id="name-form" hidden>
+          <label for="name-input">A new record! Sign the log, captain:</label>
+          <div class="row">
+            <input id="name-input" maxlength="14" autocomplete="off" placeholder="Captain Name" />
+            <button class="btn primary" type="submit">Sign</button>
+          </div>
+        </form>
+        <nav>
+          <button data-action="restart" class="btn primary">Race again</button>
+          <button data-action="leave" class="btn">Keep sailing</button>
+          <button data-action="scores" class="btn">Highscores</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- In-race HUD -->
+    <div id="hud" hidden>
+      <div class="hud-top" id="roam-hud">
+        <div class="chip"><small>Doubloons</small><b id="hud-gold">0</b></div>
+        <div class="chip wide"><small id="hud-reg-name">Nearest regatta</small><b id="hud-reg-dist">…</b></div>
+      </div>
+      <div class="hud-top" id="race-hud">
+        <div class="chip"><small>Lap</small><b id="hud-lap">1/3</b></div>
+        <div class="chip"><small>Place</small><b id="hud-place">1st</b></div>
+        <div class="chip"><small>Time</small><b id="hud-time">0:00.00</b></div>
+      </div>
+      <canvas id="minimap" width="180" height="180"></canvas>
+      <div class="boost"><small>Wind</small><div class="bar"><span id="boost-fill"></span></div></div>
+      <div id="banner"></div>
+      <div id="wrong-way" hidden>Wrong way, matey!</div>
+      <div id="prompt" hidden></div>
+      <div id="loot"></div>
+    </div>
+
+    <button id="mute" title="Mute (M)" aria-label="Toggle sound">♪</button>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

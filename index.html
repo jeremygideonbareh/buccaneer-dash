@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Buccaneer Dash</title>
     <meta name="description" content="Sail an endless, procedurally generated low-poly pirate sea, hunt treasure and race rival crews." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -69,6 +69,7 @@
           <li><kbd>Space</kbd> / <kbd>Shift</kbd> Wind gust boost</li>
           <li><kbd>E</kbd> Start a regatta at its start line</li>
           <li><kbd>Esc</kbd> Pause · <kbd>M</kbd> Mute</li>
+          <li>On a phone or tablet: steer with the arrows at bottom left, hold ▲ for full sail, WIND for the gust, ▼ to back oars, and tap the prompt to start a regatta.</li>
         </ul>
         <p class="sub">The sea goes on forever, with small islands, great forts and floating treasure chests to fish out. Gold beams of light mark the regattas: sail to one, then press <kbd>E</kbd> at its towers to race three rival crews over three laps. Sail through every pair of barrel buoys in order; the gold ring marks the next one.</p>
         <button data-action="back" class="btn">Back</button>
@@ -128,9 +129,23 @@
       <div id="wrong-way" hidden>Wrong way, matey!</div>
       <div id="prompt" hidden></div>
       <div id="loot"></div>
+
+      <!-- Touch controls: shown on phones and tablets, they feed the same keys as the keyboard -->
+      <div id="touch" hidden>
+        <div class="pad left">
+          <button class="tbtn" data-key="ArrowLeft" aria-label="Steer to port">◀</button>
+          <button class="tbtn" data-key="ArrowRight" aria-label="Steer to starboard">▶</button>
+        </div>
+        <div class="pad right">
+          <button class="tbtn back" data-key="ArrowDown" aria-label="Back oars">▼</button>
+          <button class="tbtn wind" data-key="Space" aria-label="Catch the wind">WIND</button>
+          <button class="tbtn sail" data-key="ArrowUp" aria-label="Sail forward">▲</button>
+        </div>
+      </div>
     </div>
 
     <button id="mute" title="Mute (M)" aria-label="Toggle sound">♪</button>
+    <button id="pause-btn" data-action="pausebtn" aria-label="Pause" hidden>❚❚</button>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

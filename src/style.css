@@ -525,6 +525,108 @@ kbd {
   text-decoration: line-through;
   opacity: 0.6;
 }
+#pause-btn {
+  position: fixed;
+  right: 14px;
+  bottom: 66px;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--wood);
+  border-radius: 50%;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment-dark);
+  cursor: pointer;
+}
+
+/* Touch controls */
+#touch {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0 max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  touch-action: none;
+}
+#touch .pad {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+.tbtn {
+  width: 74px;
+  height: 74px;
+  border: 3px solid var(--wood);
+  border-radius: 50%;
+  font: 400 1.9rem/1 'Pirata One', serif;
+  color: var(--parchment);
+  background: rgb(59 36 18 / 0.72);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+.tbtn.sail {
+  width: 92px;
+  height: 92px;
+  background: rgb(23 92 74 / 0.8);
+}
+.tbtn.wind {
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  background: rgb(120 84 18 / 0.8);
+}
+.tbtn.back {
+  width: 58px;
+  height: 58px;
+  font-size: 1.4rem;
+}
+.tbtn.on {
+  background: var(--gold);
+  color: var(--ink);
+  transform: scale(0.95);
+}
+body.touch #prompt {
+  pointer-events: auto;
+  cursor: pointer;
+}
+/* Keep the corner buttons and the wind meter clear of the thumb controls */
+body.touch #mute {
+  bottom: auto;
+  top: 186px;
+  right: 14px;
+}
+body.touch #pause-btn {
+  bottom: auto;
+  top: 186px;
+  right: 66px;
+}
+body.touch #minimap {
+  top: 66px;
+}
+body.touch .boost {
+  bottom: 118px;
+}
+body.touch #prompt {
+  bottom: 190px;
+}
+@media (max-width: 380px), (max-height: 420px) {
+  .tbtn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  .tbtn.sail {
+    width: 74px;
+    height: 74px;
+  }
+  .tbtn.back {
+    width: 48px;
+    height: 48px;
+  }
+}
 
 @media (max-width: 640px) {
   #minimap {

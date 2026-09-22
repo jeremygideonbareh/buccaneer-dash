@@ -132,6 +132,7 @@ function show(id) {
   $('race-hud').hidden = !race
   $('roam-hud').hidden = race
   for (const el of document.querySelectorAll('[data-race-only]')) el.hidden = !race
+  $('touch').hidden = !!id || $('hud').hidden || !TOUCH
   if (!id) document.activeElement?.blur()
   const first = id && $(id).querySelector('input, .btn.primary, .btn')
   if (first && !first.closest('[hidden]')) first.focus({ preventScroll: true })
@@ -292,6 +293,7 @@ const actions = {
   howto: () => show('howto'),
   back: () => show(returnTo),
   resume,
+  pausebtn: () => (state === 'paused' ? resume() : pause()),
   newworld: () => {
     save = newSave(save.gold)
     makeWorld()
@@ -337,6 +339,37 @@ window.addEventListener('blur', () => {
   keys.clear()
   pause()
 })
+
+// Touch controls: the on-screen buttons add and remove the same key codes the
+// keyboard uses, so the rest of the game needs no changes.
+const TOUCH = matchMedia('(pointer: coarse)').matches
+if (TOUCH) {
+  document.body.classList.add('touch')
+  $('pause-btn').hidden = false
+  for (const btn of document.querySelectorAll('#touch [data-key]')) {
+    const code = btn.dataset.key
+    const press = (e) => {
+      e.preventDefault()
+      unlockAudio()
+      keys.add(code)
+      btn.classList.add('on')
+      btn.setPointerCapture?.(e.pointerId)
+    }
+    const release = () => {
+      keys.delete(code)
+      btn.classList.remove('on')
+    }
+    btn.addEventListener('pointerdown', press)
+    btn.addEventListener('pointerup', release)
+    btn.addEventListener('pointercancel', release)
+    btn.addEventListener('lostpointercapture', release)
+    btn.addEventListener('contextmenu', (e) => e.preventDefault())
+  }
+  // Tapping the "race here" prompt starts the regatta, in place of pressing E.
+  $('prompt').addEventListener('click', () => {
+    if (state === 'roam' && nearStart()) startRace()
+  })
+}
 
 const playerInputOverride = {}
 function playerInput() {
@@ -584,7 +617,7 @@ function updateHud() {
     drawChart(p.x, p.z, player.heading, 450)
     const prompt = $('prompt')
     const showPrompt = state === 'roam' && nearStart()
-    if (showPrompt) prompt.textContent = `Press E to race ${regatta.name}`
+    if (showPrompt) prompt.textContent = TOUCH ? `Tap here to race ${regatta.name}` : `Press E to race ${regatta.name}`
     prompt.hidden = !showPrompt
   }
   $('boost-fill').style.width = `${player.boost * 100}%`
